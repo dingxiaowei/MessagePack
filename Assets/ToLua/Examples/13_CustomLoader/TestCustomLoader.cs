@@ -3,6 +3,7 @@ using System.IO;
 using LuaInterface;
 using MessagePack;
 using System.Collections.Generic;
+using System;
 
 [MessagePackObject]
 public class MyData
@@ -21,8 +22,9 @@ public class MyData
 public class TestCustomLoader : LuaClient
 {
     string tips = "Test custom loader";
-
-    void GenerateFile()
+    IntPtr address;
+    int size = 0;
+    unsafe void GenerateFile()
     {
         var data = new MyData
         {
@@ -38,6 +40,11 @@ public class TestCustomLoader : LuaClient
         var bytes = MessagePackSerializer.Serialize(data);
         var d1 = MessagePackSerializer.Deserialize<MyData>(bytes);
         File.WriteAllBytes("D:\\data.bin", bytes);
+        fixed (byte* ptr = bytes)
+        {
+            size = bytes.Length;
+            address = (IntPtr)ptr;
+        }
     }
 
     protected override LuaFileUtils InitLoader()
@@ -54,7 +61,8 @@ public class TestCustomLoader : LuaClient
 
         LuaFunction func1 = luaState.GetFunction("TestParam");
         func1.BeginPCall();
-        func1.Push(1);
+        func1.Push(address);
+        func1.Push(size);
         func1.PCall();
         func1.EndPCall();
         func1.Dispose();

@@ -1,4 +1,10 @@
 local msgPack = require "MessagePack"
+local ffi = require 'ffi'
+
+local function getByteArray(address, size)
+    local data = ffi.cast("uint8_t*", address)
+    return data, size
+end
 
 function print_r ( t )  
     local print_r_cache={}
@@ -67,7 +73,21 @@ function Test()
 	print("测试内存共享")
 end
 
-function TestParam(p1)
+function TestParam(address, length)
     print("测试获取参数")
-    print(p1)
+    print(address)
+    print(length)
+    local content = getByteArray(address, size)
+    local data, error = msgPack.unpack(content)
+    print("------------------------")
+    print(data[1])
+    print(data[2])
+
+    for key, value in pairs(data[3]) do
+        print(key.. ": ".. value)
+    end
+
+    for v in pairs(data[4]) do
+        print(v)
+    end
 end
