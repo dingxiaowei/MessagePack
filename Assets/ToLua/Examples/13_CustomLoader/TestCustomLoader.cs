@@ -1,11 +1,44 @@
 ﻿using UnityEngine;
 using System.IO;
 using LuaInterface;
+using MessagePack;
+using System.Collections.Generic;
+
+[MessagePackObject]
+public class MyData
+{
+    [Key(0)]
+    public int Id { get; set; }
+    [Key(1)]
+    public string Name { get; set; }
+    [Key(2)]
+    public Dictionary<string, string> Attributes { get; set; }
+    [Key(3)]
+    public List<string> ListValues { get; set; }
+}
 
 //use menu Lua->Copy lua files to Resources. 之后才能发布到手机
-public class TestCustomLoader : LuaClient 
+public class TestCustomLoader : LuaClient
 {
     string tips = "Test custom loader";
+
+    void GenerateFile()
+    {
+        var data = new MyData
+        {
+            Id = 1,
+            Name = "John",
+            Attributes = new Dictionary<string, string>
+            {
+                { "Key1", "Value1" },
+                { "Key2", "Value2" }
+            },
+            ListValues = new List<string>() { "1", "2" }
+        };
+        var bytes = MessagePackSerializer.Serialize(data);
+        var d1 = MessagePackSerializer.Deserialize<MyData>(bytes);
+        File.WriteAllBytes("D:\\data.bin", bytes);
+    }
 
     protected override LuaFileUtils InitLoader()
     {
@@ -14,6 +47,7 @@ public class TestCustomLoader : LuaClient
 
     protected override void CallMain()
     {
+        GenerateFile();
         LuaFunction func = luaState.GetFunction("Test");
         func.Call();
         func.Dispose();
@@ -21,6 +55,7 @@ public class TestCustomLoader : LuaClient
 
     protected override void StartMain()
     {
+        luaState.DoFile("MessagePack.lua");
         luaState.DoFile("TestLoader.lua");
         CallMain();
     }

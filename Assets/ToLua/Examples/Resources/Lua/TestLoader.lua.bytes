@@ -1,6 +1,68 @@
+local msgPack = require "MessagePack"
+
+function print_r ( t )  
+    local print_r_cache={}
+    local function sub_print_r(t,indent)
+        if (print_r_cache[tostring(t)]) then
+            print(indent.."*"..tostring(t))
+        else
+            print_r_cache[tostring(t)]=true
+            if (type(t)=="table") then
+                for pos,val in pairs(t) do
+                    if (type(val)=="table") then
+                        print(indent.."["..pos.."] => "..tostring(t).." {")
+                        sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+                        print(indent..string.rep(" ",string.len(pos)+6).."}")
+                    elseif (type(val)=="string") then
+                        print(indent.."["..pos..'] => "'..val..'"')
+                    else
+                        print(indent.."["..pos.."] => "..tostring(val))
+                    end
+                end
+            else
+                print(indent..tostring(t))
+            end
+        end
+    end
+    if (type(t)=="table") then
+        print(tostring(t).." {")
+        sub_print_r(t,"  ")
+        print("}")
+    else
+        sub_print_r(t,"  ")
+    end
+    print()
+end
+
+local function parseMessagePackFile(filePath)
+    local file = io.open(filePath,"rb")
+    if not file then
+        print("无法打开文件" .. filePath)
+    end
+    local content = file:read("*a")
+    file:close()
+    
+    -- print(content)
+    local data, error = msgPack.unpack(content)
+    -- print_r(data)
+    print("------------------------")
+    print(data[1])
+    print(data[2])
+
+	for key, value in pairs(data[3]) do
+	    print(key.. ": ".. value)
+	end
+
+	for v in pairs(data[4]) do
+        print(v)
+	end
+end
+
 print("This is a script from a utf8 file")
 print("tolua: 你好! こんにちは! 안녕하세요!")
 
 function Test()
+	parseMessagePackFile('D:\\data.bin')
 	print("this is lua file load by Resource.Load")
+	print("测试内存共享")
 end
