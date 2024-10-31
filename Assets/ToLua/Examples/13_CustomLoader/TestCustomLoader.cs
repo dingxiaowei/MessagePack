@@ -51,6 +51,13 @@ public class TestCustomLoader : LuaClient
         LuaFunction func = luaState.GetFunction("Test");
         func.Call();
         func.Dispose();
+
+        LuaFunction func1 = luaState.GetFunction("TestParam");
+        func1.BeginPCall();
+        func1.Push(1);
+        func1.PCall();
+        func1.EndPCall();
+        func1.Dispose();
     }
 
     protected override void StartMain()

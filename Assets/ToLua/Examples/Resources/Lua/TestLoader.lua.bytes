@@ -58,11 +58,16 @@ local function parseMessagePackFile(filePath)
 	end
 end
 
-print("This is a script from a utf8 file")
-print("tolua: 你好! こんにちは! 안녕하세요!")
+--print("This is a script from a utf8 file")
+--print("tolua: 你好! こんにちは! 안녕하세요!")
 
 function Test()
 	parseMessagePackFile('D:\\data.bin')
 	print("this is lua file load by Resource.Load")
 	print("测试内存共享")
+end
+
+function TestParam(p1)
+    print("测试获取参数")
+    print(p1)
 end
