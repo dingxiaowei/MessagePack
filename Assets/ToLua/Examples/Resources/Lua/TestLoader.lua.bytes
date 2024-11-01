@@ -3,13 +3,12 @@ local ffi = require 'ffi'
 
 local function getByteArray(address, length)
     local bytePointer= ffi.cast("uint8_t*", address)
-    local bytes = {}
+    local str = ""
     for i = 0, length -1 do
-        table.insert(bytes, bytePointer[i])
+        str = str..string.char(bytePointer[i])
     end
-    print("-------")
-    print(bytes)
-    return bytes
+    print("-------ffi read data:",str)
+    return str
 end
 
 function print_r ( t )  
@@ -70,8 +69,8 @@ local function parseMessagePackFile(filePath)
 	end
 end
 
---print("This is a script from a utf8 file")
---print("tolua: 你好! こんにちは! 안녕하세요!")
+print("This is a script from a utf8 file")
+print("tolua: 你好! こんにちは! 안녕하세요!")
 
 function Test()
 	parseMessagePackFile('D:\\data.bin')
@@ -80,12 +79,10 @@ function Test()
 end
 
 function TestParam(address, length)
-    print("测试获取参数")
-    print(address)
-    print(length)
+    print("测试获取参数",address, length)
     local content = getByteArray(address, length)
     local data, error = msgPack.unpack(content)
-    print("------------------------")
+    print("------------------------error:",error)
     print(data[1])
     print(data[2])
 
