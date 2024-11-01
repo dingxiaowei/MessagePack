@@ -1,13 +1,14 @@
 local msgPack = require "MessagePack"
 local ffi = require 'ffi'
 
+mydata = {}
+
 local function getByteArray(address, length)
-    local bytePointer= ffi.cast("uint8_t*", address)
+    local bytePointer = ffi.cast("uint8_t*", address)
     local str = ""
     for i = 0, length -1 do
         str = str..string.char(bytePointer[i])
     end
-    print("-------ffi read data:",str)
     return str
 end
 
@@ -71,6 +72,7 @@ end
 
 print("This is a script from a utf8 file")
 print("tolua: 你好! こんにちは! 안녕하세요!")
+local times = 100
 
 function Test()
 	parseMessagePackFile('D:\\data.bin')
@@ -78,19 +80,43 @@ function Test()
 	print("测试内存共享")
 end
 
-function TestParam(address, length)
-    print("测试获取参数",address, length)
-    local content = getByteArray(address, length)
-    local data, error = msgPack.unpack(content)
-    print("------------------------error:",error)
-    print(data[1])
-    print(data[2])
-
-    for key, value in pairs(data[3]) do
-        print(key.. ": ".. value)
+local dic = nil
+function TestSharedMemory(address, length)
+    --print("测试获取参数",address, length)
+    if dic == nil then
+        print("反序列化")
+        local content = getByteArray(address, length)
+        local data, error = msgPack.unpack(content)
+        dic = data[3]
     end
+    --print("------------------------error:",error)
+    --print(data[1])
+    --print(data[2])
 
-    for v in pairs(data[4]) do
-        print(v)
+    --for key, value in pairs(data[3]) do
+    --    print(key.. ": ".. value)
+    --end
+
+    --for v in pairs(data[4]) do
+    --    print(v)
+    --end
+    for i = 1, times, 1 do
+        --local dic = data[3]
+        if dic[1] then
+            --print("存在1")
+        end
     end
+end
+
+function TestCallWrap(dicparam)
+    for i = 1, times, 1 do
+        if dicparam:ContainsKey(1) then
+            --print("存在1")
+        end
+    end
+end
+
+function TestLuaTable()
+    print("------")
+    print_r(mydata)
 end

@@ -26,10 +26,10 @@ public class TestMsgPack : MonoBehaviour
         {
             Id = 1,
             Name = "John",
-            Attributes = new Dictionary<string, string>
+            Attributes = new Dictionary<int, long>
             {
-                { "Key1", "Value1" },
-                { "Key2", "Value2" }
+                { 1, 11111 },
+                { 2, 22222 }
             },
             ListValues = new List<string>() { "1", "2" }
         };

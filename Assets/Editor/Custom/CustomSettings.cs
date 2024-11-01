@@ -56,7 +56,8 @@ public static class CustomSettings
         //_GT(typeof(TestExport)),
         //_GT(typeof(TestExport.Space)),
         //-------------------------------------------------------------------        
-                        
+        _GT(typeof(Dictionary<int,string>)),
+        _GT(typeof(Dictionary<int,long>)),
         _GT(typeof(LuaInjectionStation)),
         _GT(typeof(InjectType)),
         _GT(typeof(Debugger)).SetNameSpace(null),          
